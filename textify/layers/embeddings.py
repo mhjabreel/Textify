@@ -37,7 +37,6 @@ class Embedding(tf.layers.Layer):
             shape = [self._vocab_size, self._embedding_size]         
         else:
             _weights = self._pretrained_weights.astype(self.dtype.as_numpy_dtype())
-            print(_weights)
             initializer = tf.constant_initializer(_weights, dtype=self._dtype) 
             shape = _weights.shape
         
@@ -72,8 +71,7 @@ class MultipleEmbedding(tf.layers.Layer):
     def call(self, inputs):
         embeddings = {}
         for k in inputs:
-            emb_k = k.replace("_ids", "")
-            if emb_k in self._embeddings:
+            if k in self._embeddings:
                 x = inputs[k]
-                embeddings[k] = self._embeddings[emb_k].call(x)
+                embeddings[k] = self._embeddings[k].call(x)
         return embeddings    
