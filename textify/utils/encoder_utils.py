@@ -46,3 +46,14 @@ def build_cell(cell_type, num_units, num_layers, residual, dropout, training):
         cells.append(cell)
     
     return cells[0] if num_layers == 1 else tf.nn.rnn_cell.MultiRNNCell(cells)
+
+
+class EncoderException(Exception):
+
+    def __init__(self, message, error_code=None, errors=None):
+        super(EncoderException, self).__init__(message)
+        self._error_code = error_code
+
+    @property
+    def error_code(self):
+        return self._error_code

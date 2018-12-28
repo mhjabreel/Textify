@@ -18,8 +18,8 @@ import io
 import tensorflow as tf
 import numpy as np
 
-from textify.layers import Embedding
-from textify.layers import MultipleEmbedding
+from textify.layers.embeddings import Embedding
+from textify.layers.embeddings import MultipleEmbedding
 from textify.utils.embedding_utils import EmbeddingSpec,load_embedding
 
 class EmbeddingTest(tf.test.TestCase):
