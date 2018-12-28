@@ -361,3 +361,26 @@ class MultiIODataLayer(_MultiFeatureDataLayer, _MultiLabelDataLayer):
 class CharacterBasedDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
         super(CharacterBasedDataLayer, self).__init__(features_source, labels_source, character_tokenizer, init_params, **kwargs)
+
+
+class ParallelDataLayer(_SingleFeatureDataLayer):
+    def __init__(self, features_source, labels_source=None, tokenizer=space_tokenizer, init_params={}, **kwargs):
+        super(ParallelDataLayer, self).__init__(features_source, labels_source, tokenizer, init_params, **kwargs)
+    
+    def initialize(self):
+        super(ParallelDataLayer, self).initialize()
+        labels_vocab = self._init_params['labels_vocab']
+        unk_value = self._init_params['label_unk_id']
+        self._labels_max_len = self._init_params.get('max_len', None)
+        self._labels_vocab = tf.contrib.lookup.index_table_from_tensor(labels_vocab, default_value=unk_value)
+        
+    def _build_labels_dataset(self, labels_source):
+        
+        return make_tokenized_data(labels_source, self._tokenizer, self._labels_vocab, self._labels_max_len, self._num_parallel_calls, prefix_key='label')
+
+    def _get_labels_padded_shapes(self):
+        return {'label_ids': [None], 'label_length': []}           
+
+    def _get_labels_padding_values(self):
+        return {'label_ids': 0, 'label_length': 0}        
+
