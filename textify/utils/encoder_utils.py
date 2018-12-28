@@ -1,18 +1,15 @@
 import tensorflow as tf
 from collections import Sequence
 
-
-def concat_reducer_fn(inputs, axis=-1):
+def concat_reduce_fn(inputs, axis=-1):
 
     return tf.concat(inputs, axis)
-
 
 def add_reducer_fn(inputs):
 
     return tf.add_n(inputs)
 
-
-def zip_and_reduce(x, y, reduce_fn=concat_reducer_fn):
+def zip_and_reduce(x, y, reduce_fn=concat_reduce_fn):
     """Zips :obj:`x` with :obj:`y` and reduces all elements."""
     if tf.contrib.framework.nest.is_sequence(x):
         tf.contrib.framework.nest.assert_same_structure(x, y)
@@ -28,10 +25,24 @@ def zip_and_reduce(x, y, reduce_fn=concat_reducer_fn):
     else:
         return reduce_fn([x, y])
 
-
 def last_encoding_from_state(state):
     if isinstance(state, Sequence):
         state = state[-1]
     if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
         return state.h
     return state
+
+def build_cell(cell_type, num_units, num_layers, residual, dropout, training):
+    
+    cells = []
+
+    for l in range(num_layers):
+        cell = cell_type(num_units)
+        if training and dropout > 0:
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell, input_keep_prob=1 - dropout)
+        if residual and l > 0:
+            cell = tf.nn.rnn_cell.ResidualWrapper(cell)
+        
+        cells.append(cell)
+    
+    return cells[0] if num_layers == 1 else tf.nn.rnn_cell.MultiRNNCell(cells)

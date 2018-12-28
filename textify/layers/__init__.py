@@ -16,3 +16,9 @@
 
 from textify.layers.embeddings import Embedding
 from textify.layers.embeddings import MultipleEmbedding
+
+from textify.layers.encoders import Encoder
+from textify.layers.encoders import MeanEncoder
+from textify.layers.encoders import RNNEncoder
+from textify.layers.encoders import UnidirectionalRNNEncoder
+from textify.layers.encoders import BidirectionalRNNEncoder
