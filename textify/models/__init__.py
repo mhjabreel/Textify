@@ -13,11 +13,5 @@
 # limitations under the License.
 # ==============================================================================
 
-import tensorflow as tf
-
-from textify.utils.encoder_utils import zip_and_reduce, concat_reduce_fn, build_cell, EncoderException
-from textify.layers.encoders.encoder import Encoder
-
-class CNNEncoder(Encoder):
-
-    pass
+from textify.models.model_base import _Classifier, _WordEmbeddingBasedModel, Model
+from textify.models.sequence_classifier import SequenceClassifier

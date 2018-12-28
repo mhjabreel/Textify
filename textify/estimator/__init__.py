@@ -13,11 +13,14 @@
 # limitations under the License.
 # ==============================================================================
 
-import tensorflow as tf
 
-from textify.utils.encoder_utils import zip_and_reduce, concat_reduce_fn, build_cell, EncoderException
-from textify.layers.encoders.encoder import Encoder
+from textify.estimator.estimator_builder import EstimatorBuilder
+from textify.estimator.estimator_builder import ClassifierBuilder
+from textify.estimator.estimator_builder import BinaryClassifierBuilder
 
-class CNNEncoder(Encoder):
+class Runner:
 
-    pass
+    def __init__(self, data_layer, estimator_builder):
+
+        self._data_layer = data_layer
+        self._estimator_builder = estimator_builder
