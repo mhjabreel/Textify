@@ -353,7 +353,11 @@ class MultiOutputDataLayer(_SingleFeatureDataLayer, _MultiLabelDataLayer):
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
         super(MultiOutputDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
 
+class MultiIODataLayer(_MultiFeatureDataLayer, _MultiLabelDataLayer):
+    def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
+        super(MultiOutputDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
 
+    
 class CharacterBasedDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
         super(CharacterBasedDataLayer, self).__init__(features_source, labels_source, character_tokenizer, init_params, **kwargs)
