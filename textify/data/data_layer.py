@@ -78,8 +78,8 @@ class DataLayer(object):
 
         dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
         
-        if not self._repeat is None and self._repeat > 1:
-            dataset = dataset.repeat(self._repeat)
+        if not self._repeat is None and self._repeat:
+            dataset = dataset.repeat()
 
         dataset = dataset.prefetch(buffer_size)
         

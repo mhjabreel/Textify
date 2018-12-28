@@ -71,10 +71,10 @@ class _Classifier(Model):
                 for _, h in enumerate(hidden_layers):
                     x = tf.layers.dense(x, h, activation=activation) 
                     
-                
             return tf.layers.dense(inputs, units=(1 if num_classes == 2 else num_classes)) 
 
     def _get_predictions(self, logits):
+        
         num_classes = self._params.get("num_classes", 2)
         if num_classes == 2:
             proba = tf.sigmoid(logits)
