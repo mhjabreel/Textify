@@ -53,6 +53,7 @@ class Model:
         raise NotImplementedError()
 
 
+@six.add_metaclass(abc.ABCMeta)
 class _Classifier(Model):
 
     def __init__(self, params, reverse_target_vocab=None, scope=None):
@@ -73,7 +74,7 @@ class _Classifier(Model):
                     
             return tf.layers.dense(inputs, units=(1 if num_classes == 2 else num_classes)) 
 
-    def _get_predictions(self, logits):
+    def get_predictions(self, logits):
         
         num_classes = self._params.get("num_classes", 2)
         if num_classes == 2:
@@ -89,7 +90,7 @@ class _Classifier(Model):
         
         return {'Predictions': predictions, 'Probabilities': proba}
 
-
+@six.add_metaclass(abc.ABCMeta)
 class _WordEmbeddingBasedModel(Model):
 
     def _get_embeddings(self, features):

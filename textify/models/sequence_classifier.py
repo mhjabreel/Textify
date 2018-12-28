@@ -15,13 +15,12 @@
 
 from textify.models.model_base import _Classifier, _WordEmbeddingBasedModel
 from textify.utils.encoder_utils import last_encoding_from_state
-
 import tensorflow as tf
 
 class SequenceClassifier(_Classifier, _WordEmbeddingBasedModel):
 
     def __init__(self, params, encoder, encoding_mode='average', reverse_target_vocab=None, scope=None):
-        super(SequenceClassifier, self).__init__(params, reverse_target_vocab, scope)
+        super(SequenceClassifier, self).__init__(params, scope)
         self._encoder = encoder
         self._encoding_mode = encoding_mode.lower()
 

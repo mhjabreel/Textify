@@ -166,13 +166,17 @@ class DataLayer(object):
 
     def input_fn(self, repeat=None):
         
-        self._repeat = repeat
-        self.initialize()
-        self.build()
-        tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, self.initializer)
-        if not self._labels_source is None:
-            return self.features, self.labels      
-        return self.features
+        def input_fn_impl():
+
+            self._repeat = repeat
+            self.initialize()
+            self.build()
+            tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, self.initializer)
+            if not self._labels_source is None:
+                return self.features, self.labels      
+            return self.features
+        
+        return input_fn_impl
 
 
 @six.add_metaclass(abc.ABCMeta)

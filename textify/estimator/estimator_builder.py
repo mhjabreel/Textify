@@ -24,14 +24,15 @@ class EstimatorBuilder:
 
         self._model_creator = model_creator
         self._params = params
-        self._global_step = tf.train.get_or_create_global_step()
+        
+        self._model = model_creator(params, None)
     
     def model_fn(self, scope=None):
         params = self._params
         def model_fn_impl(features, labels, mode):
-            model = self._model_creator(params, scope)
-            logits = model(features)
-            predictions = model.get_predictions(logits)
+            self._global_step = tf.train.get_or_create_global_step()
+            logits = self._model(features)
+            predictions = self._model.get_predictions(logits)
             
             if mode in {tf.estimator.ModeKeys.TRAIN, tf.estimator.ModeKeys.EVAL}:
                 loss = self._get_loss(logits, labels)
@@ -62,8 +63,9 @@ class EstimatorBuilder:
         
         learning_rate = params.get("learning_rate")
         self._learning_rate = tf.constant(learning_rate)
+        print(self._learning_rate)
         # decay
-        self._learning_rate = self._get_learning_rate_decay(params)        
+        #self._learning_rate = self._get_learning_rate_decay(params)        
         optimizer_name = params.get("optimizer")
 
         if optimizer_name == 'rms':

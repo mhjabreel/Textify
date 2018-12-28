@@ -15,6 +15,8 @@
 
 import tensorflow as tf
 
+tf.logging.set_verbosity(tf.logging.INFO)
+
 class Runner:
 
     def __init__(self,
@@ -44,7 +46,7 @@ class Runner:
             tf_random_seed=seed)
 
         self._estimator = tf.estimator.Estimator(
-            model_fn=estimator_builder.model_fn,
+            model_fn=estimator_builder.model_fn(),
             config=run_config
         )
 
