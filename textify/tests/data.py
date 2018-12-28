@@ -13,10 +13,10 @@
 # limitations under the License.
 # ==============================================================================
 
-from textify.data import (TextClassificationDataLayer,
-                        MultiInputTextClassificationDataLayer,
-                        MultiOutputTextClassificationDataLayer,
-                        CharacterBasedTextClassificationDataLayer)
+from textify.data import (DefaultDataLayer,
+                        MultiInputDataLayer,
+                        MultiOutputDataLayer,
+                        CharacterBasedDataLayer)
 
 import tensorflow as tf
 import os
@@ -24,7 +24,7 @@ import io
 
 class DataLayerTest(tf.test.TestCase):
 
-    def testTextClassificationDataLayer(self):
+    def testDefaultDataLayer(self):
 
         vocab_file = os.path.join(self.get_temp_dir(), "vocab.txt")
         features_file = os.path.join(self.get_temp_dir(), "data.txt")
@@ -47,7 +47,7 @@ class DataLayerTest(tf.test.TestCase):
         init_params['unk_id'] = 0
         init_params['labels_vocab'] = ["positive", "negative"]
 
-        data_layer = TextClassificationDataLayer(features_file, labels_file, init_params, batch_size=1)
+        data_layer = DefaultDataLayer(features_file, labels_file, init_params, batch_size=1)
 
         features, labels = data_layer.input_fn()
 
@@ -60,7 +60,7 @@ class DataLayerTest(tf.test.TestCase):
             self.assertAllEqual([[3, 2, 0]], f["ids"])
             self.assertAllEqual([0], l)    
 
-    def testMultiInputTextClassificationDataLayer(self):
+    def testMultiInputDataLayer(self):
 
         vocab_file = os.path.join(self.get_temp_dir(), "vocab.txt")
         features_file = os.path.join(self.get_temp_dir(), "data.txt")
@@ -87,20 +87,26 @@ class DataLayerTest(tf.test.TestCase):
         
         init_params['labels_vocab'] = ["positive", "negative"]
 
-        data_layer = MultiInputTextClassificationDataLayer({'input': features_file, 'key': features_file}, labels_file, init_params, batch_size=1, feature_names=['input', 'key'])
+        data_layer = MultiInputDataLayer({'input': features_file, 'key': features_file}, labels_file, init_params, batch_size=1, feature_names=['input', 'key'])
         features, labels = data_layer.input_fn()
 
         with self.test_session() as sess:
             sess.run(tf.tables_initializer())
             sess.run(tf.global_variables_initializer())
             f, l = sess.run([features, labels])
-            self.assertAllEqual([3], f["input_length"])
-            self.assertAllEqual([3], f["key_length"])
-            self.assertAllEqual([[3, 2, 0]], f["input_ids"])
-            self.assertAllEqual([[3, 2, 0]], f["key_ids"])            
+            self.assertEqual(set(f.keys()), {"length", "ids"})
+            self.assertTrue(len(f['ids']) == 2)
+            self.assertTrue('input' in f['ids'])
+            self.assertTrue('key' in f['ids'])
+            self.assertTrue('input' in f['length'])
+            self.assertTrue('key' in f['length'])            
+            self.assertAllEqual([3], f["length"]['input'])
+            self.assertAllEqual([3], f["length"]['key'])
+            self.assertAllEqual([[3, 2, 0]], f["ids"]['input'])
+            self.assertAllEqual([[3, 2, 0]], f["ids"]['key'])            
             self.assertAllEqual([0], l)  
 
-    def testMultiOutputTextClassificationDataLayer(self):
+    def testMultiOutputDataLayer(self):
 
         vocab_file = os.path.join(self.get_temp_dir(), "vocab.txt")
         features_file = os.path.join(self.get_temp_dir(), "data.txt")
@@ -125,7 +131,7 @@ class DataLayerTest(tf.test.TestCase):
         init_params['unk_id'] = 0
         init_params['labels_vocab'] = ["positive", "negative"]
 
-        data_layer = MultiOutputTextClassificationDataLayer(features_file, labels_file, init_params, num_labels=3, batch_size=1)
+        data_layer = MultiOutputDataLayer(features_file, labels_file, init_params, num_labels=3, batch_size=1)
 
         features, labels = data_layer.input_fn()
 
@@ -139,7 +145,7 @@ class DataLayerTest(tf.test.TestCase):
             self.assertAllEqual([[3, 2, 0]], f["ids"])
             self.assertAllEqual([[0.0, 1.0, 0.0]], l)    
 
-    def testCharacterBasedTextClassificationDataLayer(self):
+    def testCharacterBasedDataLayer(self):
         vocab_file = os.path.join(self.get_temp_dir(), "vocab.txt")
         features_file = os.path.join(self.get_temp_dir(), "data.txt")
         labels_file = os.path.join(self.get_temp_dir(), "labels.txt")
@@ -169,7 +175,7 @@ class DataLayerTest(tf.test.TestCase):
         init_params['labels_vocab'] = ["positive", "negative"]            
 
 
-        data_layer = CharacterBasedTextClassificationDataLayer(features_file, labels_file, init_params, num_labels=3, batch_size=1)
+        data_layer = CharacterBasedDataLayer(features_file, labels_file, init_params, num_labels=3, batch_size=1)
 
         features, labels = data_layer.input_fn()
 

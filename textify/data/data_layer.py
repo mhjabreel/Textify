@@ -20,6 +20,7 @@ import tensorflow as tf
 from textify.data.utils import count_lines, make_tokenized_data
 from textify.data.tokenizer import space_tokenizer, character_tokenizer
 
+from collections import defaultdict
 
 class DataException(Exception):
     def __init__(self, message, errors=None):
@@ -304,9 +305,12 @@ class _MultiFeatureDataLayer(DataLayer):
             processed_data = {}
             for sub_data in data:
                 for key, value in six.iteritems(sub_data):
-                    processed_data[key] = value
+                    prefix, key = key.split("_")
+                    if not key in processed_data:
+                        processed_data[key] = {}
+                    processed_data[key][prefix] = value
             return processed_data        
-        
+            
         features_dataset = features_dataset.map(lambda *data: _process(data), num_parallel_calls=self._num_parallel_calls)
         return features_dataset
 
@@ -314,17 +318,17 @@ class _MultiFeatureDataLayer(DataLayer):
         return count_lines(features_source[self._feature_names[0]])
 
     def _get_features_padded_shapes(self):
-        padded_shapes = {}
+        padded_shapes = defaultdict(dict)
         for feature in self._feature_names:
-            padded_shapes['{}_ids'.format(feature)] = [None]
-            padded_shapes['{}_length'.format(feature)] = []
+            padded_shapes['ids'][feature] = [None]
+            padded_shapes['length'][feature] = []
         return padded_shapes          
 
     def _get_features_padding_values(self):
-        padded_values = {}
+        padded_values = defaultdict(dict)
         for feature in self._feature_names:
-            padded_values['{}_ids'.format(feature)] = 0
-            padded_values['{}_length'.format(feature)] = 0
+            padded_values['ids'][feature] = 0
+            padded_values['length'][feature] = 0
         return padded_values     
 
 
@@ -334,22 +338,22 @@ class _CharacterBasedDataLayer(DataLayer):
 
 
 
-class TextClassificationDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
+class DefaultDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
-        super(TextClassificationDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
+        super(DefaultDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
  
 
-class MultiInputTextClassificationDataLayer(_MultiFeatureDataLayer, _OneLabelDataLayer):
+class MultiInputDataLayer(_MultiFeatureDataLayer, _OneLabelDataLayer):
 
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
-        super(MultiInputTextClassificationDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)        
+        super(MultiInputDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)        
 
-class MultiOutputTextClassificationDataLayer(_SingleFeatureDataLayer, _MultiLabelDataLayer):
+class MultiOutputDataLayer(_SingleFeatureDataLayer, _MultiLabelDataLayer):
 
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
-        super(MultiOutputTextClassificationDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
+        super(MultiOutputDataLayer, self).__init__(features_source, labels_source, space_tokenizer, init_params, **kwargs)
 
 
-class CharacterBasedTextClassificationDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
+class CharacterBasedDataLayer(_SingleFeatureDataLayer, _OneLabelDataLayer):
     def __init__(self, features_source, labels_source=None, init_params={}, **kwargs):
-        super(CharacterBasedTextClassificationDataLayer, self).__init__(features_source, labels_source, character_tokenizer, init_params, **kwargs)
+        super(CharacterBasedDataLayer, self).__init__(features_source, labels_source, character_tokenizer, init_params, **kwargs)
