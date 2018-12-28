@@ -14,3 +14,60 @@
 # ==============================================================================
 
 import tensorflow as tf
+
+class Runner:
+
+    def __init__(self,
+            data_layer,
+            estimator_builder,
+            config,
+            session_config=None,
+            gpu_allow_growth=False,
+            seed=None):
+
+        self._data_layer = data_layer
+        self._estimator_builder = estimator_builder
+        self._config = config
+        
+        session_config_base = tf.ConfigProto(
+            allow_soft_placement=True,
+            log_device_placement=False,
+            gpu_options=tf.GPUOptions(allow_growth=gpu_allow_growth)
+        )
+        
+        if session_config is not None:
+            session_config_base.MergeFrom(session_config)
+
+        run_config = tf.estimator.RunConfig(
+            model_dir=config["model_dir"],
+            session_config=session_config_base,
+            tf_random_seed=seed)
+
+        self._estimator = tf.estimator.Estimator(
+            model_fn=estimator_builder.model_fn,
+            config=run_config
+        )
+
+
+    def _build_train_spec(self, checkpoint_path=None):
+        train_hooks = None
+        train_spec = tf.estimator.TrainSpec(
+            input_fn=self._data_layer.input_fn(),
+            max_steps=self._config["train"].get("train_steps"),
+            hooks=train_hooks)
+        return train_spec        
+    
+    def train(self, checkpoint_path=None):
+        pass
+    
+    def evaluate(self, checkpoint_path=None):
+        pass
+    
+
+    def train_and_evaluate(self, checkpoint_path=None):
+        pass
+
+    def predict(self, checkpoint_path=None):
+        pass
+
+    
