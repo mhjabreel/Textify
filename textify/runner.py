@@ -57,7 +57,15 @@ class Runner:
             input_fn=self._data_layer.input_fn(repeat=True),
             max_steps=self._config["train"].get("train_steps"),
             hooks=train_hooks)
-        return train_spec        
+        return train_spec
+
+    def _build_eval_spec(self, checkpoint_path=None):
+        eval_hooks = None
+        eval_spec = tf.estimator.EvalSpec(
+            input_fn=self._data_layer.input_fn(repeat=True),
+            steps=100,
+            hooks=eval_hooks)
+        return eval_spec             
     
     def train(self, checkpoint_path=None):
         """Runs the training loop.
@@ -70,7 +78,8 @@ class Runner:
         self._estimator.train(train_spec.input_fn, hooks=train_spec.hooks, max_steps=train_spec.max_steps)
     
     def evaluate(self, checkpoint_path=None):
-        pass
+        eval_spec = self._build_eval_spec(checkpoint_path)
+        self._estimator.evaluate(eval_spec.input_fn, hooks=eval_spec.hooks, steps=eval_spec.steps, checkpoint_path=checkpoint_path)
     
 
     def train_and_evaluate(self, checkpoint_path=None):

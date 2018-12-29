@@ -17,6 +17,8 @@ import tensorflow as tf
 import six
 import abc
 
+from textify.utils.metrics import precision_score, recall_score
+
 @six.add_metaclass(abc.ABCMeta)
 class EstimatorBuilder:
 
@@ -44,7 +46,7 @@ class EstimatorBuilder:
                     train_op = optimizer.apply_gradients(zip(gradients, variables), global_step=self._global_step)
                 else:
                     train_op = None    
-                eval_metric_ops = self._evaluate(labels, predictions)  
+                    eval_metric_ops = self._evaluate(labels, predictions)  
                 predictions = None          
             else:
                 loss = None
@@ -173,6 +175,26 @@ class ClassifierBuilder(EstimatorBuilder):
 
         return loss
 
+    def _evaluate(self, y_true, y_pred):
+        
+        if isinstance(y_pred, dict):
+            y_pred = y_pred['Predictions']
+        
+        accuracy = tf.metrics.accuracy(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, self._num_classes)
+        recall = recall_score(y_true, y_pred, self._num_classes)
+        f1 = (2 * precision[0] * recall[0]) / (recall[0] + precision[0])
+        f1_update = (2 * precision[1] * recall[1]) / (recall[1] + precision[1])
+
+        eval_metrics = {
+            'Accuracy': accuracy,
+            'Precision': precision,
+            'Recall': recall,
+            'F1': (f1, f1_update)  
+        } 
+
+        return eval_metrics        
+
 
 class BinaryClassifierBuilder(ClassifierBuilder):
     def __init__(self, model_creator, params):
@@ -197,3 +219,4 @@ class BinaryClassifierBuilder(ClassifierBuilder):
         } 
 
         return eval_metrics
+

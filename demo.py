@@ -1,6 +1,6 @@
 import os
 from textify.models import SequenceClassifier
-from textify.estimator import BinaryClassifierBuilder
+from textify.estimator import ClassifierBuilder, BinaryClassifierBuilder
 from textify.runner import Runner
 from textify.data.data_layer import DefaultDataLayer
 from textify.utils.embedding_utils import EmbeddingSpec
@@ -21,7 +21,8 @@ params = defaultdict(
         vocab_size=90000
     ),
     learning_rate=0.0001,
-    optimizer='adam'
+    optimizer='adam',
+    num_classes=2
 )
 
 vocab_file = os.path.join("data", "imdb.vocab")
@@ -38,6 +39,6 @@ data_layer = DefaultDataLayer(features_file, labels_file, init_params, batch_siz
 
 config = {'model_dir': 'tmp', 'train': {'train_steps': 2000}}
 
-estimator_builder = BinaryClassifierBuilder(model_crator, params)
+estimator_builder = ClassifierBuilder(model_crator, params)
 runner = Runner(data_layer, estimator_builder, config)
-runner.train()
+runner.evaluate()

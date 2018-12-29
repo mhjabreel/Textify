@@ -17,10 +17,3 @@
 from textify.estimator.estimator_builder import EstimatorBuilder
 from textify.estimator.estimator_builder import ClassifierBuilder
 from textify.estimator.estimator_builder import BinaryClassifierBuilder
-
-class Runner:
-
-    def __init__(self, data_layer, estimator_builder):
-
-        self._data_layer = data_layer
-        self._estimator_builder = estimator_builder
