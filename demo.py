@@ -40,5 +40,5 @@ data_layer = DefaultDataLayer(features_file, labels_file, init_params, batch_siz
 config = {'model_dir': 'tmp', 'train': {'train_steps': 2000}}
 
 estimator_builder = ClassifierBuilder(model_crator, params)
-runner = Runner(data_layer, estimator_builder, config)
-runner.train()
+runner = Runner(estimator_builder, config)
+runner.train_and_evaluate(data_layer, data_layer)

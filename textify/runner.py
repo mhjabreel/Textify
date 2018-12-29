@@ -25,8 +25,7 @@ class Runner:
             session_config=None,
             gpu_allow_growth=False,
             seed=None):
-
-        self._data_layer = data_layer
+            
         self._estimator_builder = estimator_builder
         self._config = config
         
