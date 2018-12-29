@@ -19,8 +19,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 class Runner:
 
-    def __init__(self,
-            data_layer,
+    def __init__(self,            
             estimator_builder,
             config,
             session_config=None,
@@ -51,39 +50,43 @@ class Runner:
         )
 
 
-    def _build_train_spec(self, checkpoint_path=None):
+    def _build_train_spec(self, data_layer, checkpoint_path=None):
         train_hooks = None
         train_spec = tf.estimator.TrainSpec(
-            input_fn=self._data_layer.input_fn(repeat=True),
+            input_fn=data_layer.input_fn(repeat=True),
             max_steps=self._config["train"].get("train_steps"),
             hooks=train_hooks)
         return train_spec
 
-    def _build_eval_spec(self, checkpoint_path=None):
+    def _build_eval_spec(self, data_layer, checkpoint_path=None):
         eval_hooks = None
         eval_spec = tf.estimator.EvalSpec(
-            input_fn=self._data_layer.input_fn(repeat=True),
+            input_fn=data_layer.input_fn(),
             steps=100,
             hooks=eval_hooks)
         return eval_spec             
     
-    def train(self, checkpoint_path=None):
+    def train(self, data_layer, checkpoint_path=None):
         """Runs the training loop.
         Args:
             checkpoint_path: The checkpoint path to load the model weights from it.
         """
         if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
             checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
-        train_spec = self._build_train_spec(checkpoint_path)
+        train_spec = self._build_train_spec(data_layer, checkpoint_path)
         self._estimator.train(train_spec.input_fn, hooks=train_spec.hooks, max_steps=train_spec.max_steps)
     
-    def evaluate(self, checkpoint_path=None):
-        eval_spec = self._build_eval_spec(checkpoint_path)
+    def evaluate(self, data_layer, checkpoint_path=None):
+        eval_spec = self._build_eval_spec(data_layer, checkpoint_path)
         self._estimator.evaluate(eval_spec.input_fn, hooks=eval_spec.hooks, steps=eval_spec.steps, checkpoint_path=checkpoint_path)
     
 
-    def train_and_evaluate(self, checkpoint_path=None):
-        pass
+    def train_and_evaluate(self, train_data_layer, eval_data_layer, checkpoint_path=None):
+        if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
+            checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
+        train_spec = self._build_train_spec(train_data_layer, checkpoint_path)
+        eval_spec = self._build_eval_spec(eval_data_layer)
+        tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
 
     def predict(self, checkpoint_path=None):
         pass
