@@ -24,8 +24,6 @@ params = defaultdict(
     optimizer='adam'
 )
 
-
-
 vocab_file = os.path.join("data", "imdb.vocab")
 features_file = os.path.join("data", "reviews.txt")
 labels_file = os.path.join("data", "labels.txt")
@@ -34,7 +32,7 @@ labels_file = os.path.join("data", "labels.txt")
 init_params = {}
 init_params['vocab'] = vocab_file
 init_params['unk_id'] = 0
-init_params['labels_vocab'] = ["positive", "negative"]
+init_params['labels_vocab'] = ["pos", "neg"]
 
 data_layer = DefaultDataLayer(features_file, labels_file, init_params, batch_size=10)
 

@@ -63,9 +63,9 @@ class EstimatorBuilder:
         
         learning_rate = params.get("learning_rate")
         self._learning_rate = tf.constant(learning_rate)
-        print(self._learning_rate)
+        
         # decay
-        #self._learning_rate = self._get_learning_rate_decay(params)        
+        self._learning_rate = self._get_learning_rate_decay(params)        
         optimizer_name = params.get("optimizer")
 
         if optimizer_name == 'rms':
