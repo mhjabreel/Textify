@@ -41,4 +41,4 @@ config = {'model_dir': 'tmp', 'train': {'train_steps': 2000}}
 
 estimator_builder = ClassifierBuilder(model_crator, params)
 runner = Runner(data_layer, estimator_builder, config)
-runner.evaluate()
+runner.train()
