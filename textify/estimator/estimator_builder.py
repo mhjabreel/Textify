@@ -22,12 +22,11 @@ from textify.utils.metrics import precision_score, recall_score
 @six.add_metaclass(abc.ABCMeta)
 class EstimatorBuilder:
 
-    def __init__(self, model_creator, params):
+    def __init__(self, model, params):
 
-        self._model_creator = model_creator
+        # self._model_creator = model_creator
         self._params = params
-        
-        self._model = model_creator(params, None)
+        self._model = model #model_creator(params, None)
     
     def model_fn(self, scope=None):
         params = self._params
@@ -63,7 +62,9 @@ class EstimatorBuilder:
 
     def _get_optimizer(self, params):
         
+        print(params)
         learning_rate = params.get("learning_rate")
+        print(learning_rate)
         self._learning_rate = tf.constant(learning_rate)
         
         # decay

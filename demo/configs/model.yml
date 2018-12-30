@@ -1,0 +1,10 @@
+model:
+  model_type: demo/model.py
+  name: "Model"
+  model_params:
+    embeddings:
+      size: 310
+    hidden_layers: [100]
+    num_classes: 2
+
+      

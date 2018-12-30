@@ -20,19 +20,17 @@ tf.logging.set_verbosity(tf.logging.INFO)
 class Runner:
 
     def __init__(self,            
-            estimator_builder,
+            estimator,
             config,
             session_config=None,
-            gpu_allow_growth=False,
             seed=None):
             
-        self._estimator_builder = estimator_builder
+        self._estimator = estimator
         self._config = config
         
         session_config_base = tf.ConfigProto(
             allow_soft_placement=True,
             log_device_placement=False,
-            gpu_options=tf.GPUOptions(allow_growth=gpu_allow_growth)
         )
         
         if session_config is not None:
@@ -44,7 +42,7 @@ class Runner:
             tf_random_seed=seed)
 
         self._estimator = tf.estimator.Estimator(
-            model_fn=estimator_builder.model_fn(),
+            model_fn=estimator.model_fn(),
             config=run_config
         )
 
@@ -53,7 +51,7 @@ class Runner:
         train_hooks = None
         train_spec = tf.estimator.TrainSpec(
             input_fn=data_layer.input_fn(repeat=True),
-            max_steps=self._config["train"].get("train_steps"),
+            max_steps=self._config.get("train_steps"),
             hooks=train_hooks)
         return train_spec
 
@@ -84,7 +82,9 @@ class Runner:
         if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
             checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
         train_spec = self._build_train_spec(train_data_layer, checkpoint_path)
+        print(train_spec)
         eval_spec = self._build_eval_spec(eval_data_layer)
+        print(eval_spec)
         tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
 
     def predict(self, checkpoint_path=None):

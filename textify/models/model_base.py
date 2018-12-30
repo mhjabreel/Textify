@@ -100,3 +100,17 @@ class _WordEmbeddingBasedModel(Model):
             embedding.build(None)
             return embedding.call(features)
 
+
+# @six.add_metaclass(abc.ABCMeta)
+# class _RNNBasedModel(Model):
+
+#     def _encode(self, embeddings, lengths):
+        
+#         with tf.variable_scope("Encoder"):
+
+#             encoder_outputs, encoder_state, _ = self._encoder.call(embeddings, sequence_length=lengths)       
+#             if self._encoding_mode == "average":
+#                 encoded = tf.reduce_mean(encoder_outputs, axis=1)
+#             elif self._encoding_mode == "last":
+#                 encoded = last_encoding_from_state(encoder_state)        
+#             return encoded

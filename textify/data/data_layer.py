@@ -279,9 +279,10 @@ class _MultiFeatureDataLayer(DataLayer):
         self._max_lengths = {}
 
         for feature in self._feature_names:
-            vocab = init_params['{}_vocab'.format(feature)]
-            unk_value = init_params['{}_unk_id'.format(feature)]
-            max_len = init_params.get('{}_max_len'.format(feature), None)
+            feature_params = init_params['features'][feature]
+            vocab = feature_params['vocab']
+            unk_value = feature_params['unk_id']
+            max_len = feature_params.get('max_len', None)
             self._vocabs[feature] = tf.contrib.lookup.index_table_from_file(vocab, default_value=unk_value) 
             self._max_lengths[feature] = max_len
 
