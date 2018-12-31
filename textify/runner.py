@@ -39,6 +39,8 @@ class Runner:
         run_config = tf.estimator.RunConfig(
             model_dir=config["model_dir"],
             session_config=session_config_base,
+            save_checkpoints_steps=500,
+            keep_checkpoint_max=10,
             tf_random_seed=seed)
 
         self._estimator = tf.estimator.Estimator(
@@ -59,7 +61,7 @@ class Runner:
         eval_hooks = None
         eval_spec = tf.estimator.EvalSpec(
             input_fn=data_layer.input_fn(),
-            steps=100,
+            steps=None,
             hooks=eval_hooks)
         return eval_spec             
     
