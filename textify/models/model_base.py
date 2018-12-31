@@ -30,22 +30,22 @@ class Model:
         self._scope = scope       
 
     @abc.abstractmethod
-    def _get_embeddings(self, features):
+    def _get_embeddings(self, features, mode=tf.estimator.ModeKeys.TRAIN):
         raise NotImplementedError()
     
     @abc.abstractmethod
-    def _encode(self, embeddings, lengths):
+    def _encode(self, embeddings, lengths, mode=tf.estimator.ModeKeys.TRAIN):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def _get_logits(self, inputs):
+    def _get_logits(self, inputs, mode=tf.estimator.ModeKeys.TRAIN):
         raise NotImplementedError()
     
-    def __call__(self, features):
+    def __call__(self, features, mode=tf.estimator.ModeKeys.TRAIN):
         with tf.variable_scope(self._scope or "textify"):
-            embeddings = self._get_embeddings(features['ids'])
-            encoded = self._encode(embeddings, features['length'])
-            logits = self._get_logits(encoded)
+            embeddings = self._get_embeddings(features['ids'], mode)
+            encoded = self._encode(embeddings, features['length'], mode)
+            logits = self._get_logits(encoded, mode)
             return logits
 
     @abc.abstractmethod
@@ -60,7 +60,7 @@ class _Classifier(Model):
         super(_Classifier, self).__init__(params, scope)
         self._reverse_target_vocab = reverse_target_vocab
 
-    def _get_logits(self, inputs):
+    def _get_logits(self, inputs, mode=tf.estimator.ModeKeys.TRAIN):
 
         with tf.variable_scope("Output"):
             num_classes = self._params.get("num_classes", 2)
@@ -93,7 +93,7 @@ class _Classifier(Model):
 @six.add_metaclass(abc.ABCMeta)
 class _WordEmbeddingBasedModel(Model):
 
-    def _get_embeddings(self, features):
+    def _get_embeddings(self, features, mode=tf.estimator.ModeKeys.TRAIN):
 
         with tf.device("/cpu:0"):
             embedding = Embedding(self._params['embedding_specs'])

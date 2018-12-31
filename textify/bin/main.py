@@ -96,8 +96,10 @@ def main():
             features_count = 1
 
         if features_count > 1:
+            
             cls_data_layer = MultiInputDataLayer
             data_kwargs['feature_names'] = feature_names
+            data_init_params['features'] = {}
             for feature in feature_names:
                 data_init_params['features'][feature] = {
                     'vocab': data_config['vocabs'][feature],
@@ -115,9 +117,15 @@ def main():
     
     print("")
     print(data_config)
-
-    model_importer = DynamicImporter(model_config['model_type'])
+    
+    model_type_and_ref = model_config['model_type'].split('#')
+    model_type = model_type_and_ref[0]
+    
+    model_importer = DynamicImporter(model_type)
     model_params = model_config['model_params']
+
+    #model_type
+
     if "name" in model_params:
         model_creator = model_importer.get_class(model_params["name"])
     else:

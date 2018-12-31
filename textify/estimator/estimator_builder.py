@@ -32,7 +32,7 @@ class EstimatorBuilder:
         params = self._params
         def model_fn_impl(features, labels, mode):
             self._global_step = tf.train.get_or_create_global_step()
-            logits = self._model(features)
+            logits = self._model(features, mode)
             predictions = self._model.get_predictions(logits)
             eval_metric_ops = None
             if mode in {tf.estimator.ModeKeys.TRAIN, tf.estimator.ModeKeys.EVAL}:
