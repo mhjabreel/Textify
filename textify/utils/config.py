@@ -16,7 +16,7 @@
 import tensorflow as tf
 import yaml
 
-class Configure(object):
+class Configuration(object):
 
     def __init__(self, config_paths, config={}):
         
@@ -25,7 +25,7 @@ class Configure(object):
         for config_path in config_paths:
             with tf.gfile.Open(config_path, mode="rb") as config_file:
                 subconfig = yaml.load(config_file.read())
-                Configure.merge_dict(config, subconfig)
+                Configuration.merge_dict(config, subconfig)
         self._config = config       
 
     def __len__(self):
@@ -48,7 +48,7 @@ class Configure(object):
     def merge_dict(dict1, dict2):
         for k, v in dict2.items():
             if isinstance(v, dict):
-                dict1[k] = Configure.merge_dict(dict1.get(k, {}), v)
+                dict1[k] = Configuration.merge_dict(dict1.get(k, {}), v)
             else:
                 dict1[k] = v
         

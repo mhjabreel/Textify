@@ -20,4 +20,5 @@ from textify.layers.encoders.encoder import Encoder
 
 class CNNEncoder(Encoder):
 
-    pass
+    def __init__(self):
+        pass

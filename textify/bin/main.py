@@ -24,7 +24,7 @@ import tensorflow as tf
 import collections
 
 from textify import Runner
-from textify.utils import Configure
+from textify.utils import Configuration
 from textify.utils import DynamicImporter
 from textify.models import Model
 from textify.data import DataLayer
@@ -44,22 +44,17 @@ def main():
 
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("run", choices=["train_and_eval", "train", "eval", "predict", "score"],
+    parser.add_argument("run", choices=["train_and_eval", "train", "eval", "predict"],
                         help="Run type.")
     parser.add_argument("--config", required=True, nargs="+",
-                        help="List of configuration files.")    
-    parser.add_argument("--model", default="", help="Custom model configuration file.")    
+                        help="List of configuration files.")       
     parser.add_argument("--run_dir", default="",
                         help="If set, model_dir will be created relative to this location.")
-    parser.add_argument("--data_dir", default="",
-                        help="If set, data files are expected to be relative to this location.")
     parser.add_argument("--features_file", default=[], nargs="+",
                         help="Run inference on this file.")
     parser.add_argument("--predictions_file", default="",
                         help=("File used to save predictions. If not set, predictions are printed "
                             "on the standard output."))
-    parser.add_argument("--log_prediction_time", default=False, action="store_true",
-                        help="Logs some prediction time metrics.")
     parser.add_argument("--checkpoint_path", default=None,
                         help=("Checkpoint or directory to use for inference or export "
                             "(when a directory is set, the latest checkpoint is used).")) 
@@ -73,11 +68,9 @@ def main():
 
     tf.logging.set_verbosity(getattr(tf.logging, args.log_level))
 
-    config = Configure(args.config)
+    config = Configuration(args.config)
     if args.run_dir:
         config["model_dir"] = os.path.join(args.run_dir, config["model_dir"])
-    # if args.data_dir:
-    #     config["data"] = prefix_paths(args.data_dir, config["data"]) 
 
     #print(config)
     model_config = config['model']

@@ -15,5 +15,5 @@
 
 
 from textify.utils.module import DynamicImporter
-from textify.utils.config import Configure
+from textify.utils.config import Configuration
 
