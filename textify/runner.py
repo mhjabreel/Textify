@@ -62,6 +62,7 @@ class Runner:
         eval_spec = tf.estimator.EvalSpec(
             input_fn=data_layer.input_fn(),
             steps=None,
+            throttle_secs=0,
             hooks=eval_hooks)
         return eval_spec             
     
