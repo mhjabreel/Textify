@@ -175,7 +175,8 @@ def main():
                 pretrained_weights = load_embedding(embedding_config['path'],
                                             vocabs[0],
                                             with_header=embedding_config['header'],
-                                            dim=embedding_config['size'])
+                                            dim=embedding_config['size'],
+                                            separator=embedding_config.get('separator', ' '))
                 emb_spec = EmbeddingSpec(
                     name="input_emb",
                     pretrained_weights=pretrained_weights,
@@ -206,7 +207,8 @@ def main():
                         pretrained_weights = load_embedding(embedding_config[k]['path'],
                                                     vocab,
                                                     with_header=embedding_config[k]['header'],
-                                                    dim=embedding_config[k]['size'])
+                                                    dim=embedding_config[k]['size'],
+                                                    separator=embedding_config.get('separator', ' '))
                         
                         emb_spec = EmbeddingSpec(
                             name=k,
