@@ -273,7 +273,7 @@ def main():
                         **_kwargs) 
         
         if 'eval_hooks' in train_config:
-            pass
+            eval_hooks = None
         else:
             eval_hooks = None
         
