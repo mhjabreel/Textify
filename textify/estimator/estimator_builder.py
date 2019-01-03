@@ -28,7 +28,7 @@ class EstimatorBuilder:
         self._params = params
         self._model = model #model_creator(params, None)
     
-    def model_fn(self, scope=None):
+    def model_fn(self, scope=None, eval_hooks=None, external_eval_hooks=None):
         params = self._params
         def model_fn_impl(features, labels, mode):
             self._global_step = tf.train.get_or_create_global_step()
@@ -49,13 +49,20 @@ class EstimatorBuilder:
                 predictions = None          
             else:
                 loss = None
+
+            if eval_hooks is None:
+                eval_hooks = []
+            if not external_eval_hooks is None:
+                for name, hook in external_eval_hooks:
+                    eval_hooks.append(hook(name, labels, predictions))
             
             return tf.estimator.EstimatorSpec(
                 mode=mode,
                 predictions=predictions,
                 loss=loss,
                 train_op=train_op,
-                eval_metric_ops=eval_metric_ops)
+                eval_metric_ops=eval_metric_ops,
+                evaluation_hooks=eval_hooks)
         
         return model_fn_impl
         

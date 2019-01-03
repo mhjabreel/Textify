@@ -38,7 +38,7 @@ from textify.data import DefaultDataLayer
 from textify.data import MultiInputDataLayer
 from textify.data import MultiOutputDataLayer
 from textify.data import MultiIODataLayer
-
+from textify.utils.hooks import ExternalEvaluatorHook
 
 def main():
 
@@ -271,8 +271,22 @@ def main():
                         dev_labels_source,
                         data_init_params,
                         **_kwargs) 
+        
+        if 'eval_hooks' in train_config:
+            pass
+        else:
+            eval_hooks = None
+        
+        if 'external_eval_hooks' in train_config:
+            external_eval_hooks = []
+            # eehs = train_config['external_eval_hooks']
+            eeh_importer = DynamicImporter(train_config['external_eval_hooks'])
+            external_eval_hooks.append(eeh_importer.get_first_class_of(ExternalEvaluatorHook))
+        else:
+            external_eval_hooks = None
 
-        runner = Runner(estimator, train_config)
+
+        runner = Runner(estimator, train_config, eval_hooks=eval_hooks, external_eval_hooks=external_eval_hooks)
         if args.run == 'train_and_eval':
             runner.train_and_evaluate(train_data_layer, dev_data_layer)
         else:

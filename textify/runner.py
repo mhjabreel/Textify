@@ -22,6 +22,8 @@ class Runner:
     def __init__(self,            
             estimator,
             config,
+            eval_hooks=None,
+            external_eval_hooks=None,
             session_config=None,
             seed=None):
             
@@ -44,7 +46,7 @@ class Runner:
             tf_random_seed=seed)
 
         self._estimator = tf.estimator.Estimator(
-            model_fn=estimator.model_fn(),
+            model_fn=estimator.model_fn(eval_hooks=eval_hooks, external_eval_hooks=external_eval_hooks),
             config=run_config
         )
 
