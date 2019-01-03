@@ -150,7 +150,7 @@ class ClassifierBuilder(EstimatorBuilder):
         if self._num_classes == 2:
             losses = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(labels, tf.float32), logits=tf.squeeze(logits, 1))
         else:
-            losses = tf.nn.softmax_cross_entropy_with_logits_v2(labels=tf.cast(labels, tf.float32), logits=logits)
+            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.cast(labels, tf.int32), logits=logits)
         
         class_weights = self._params.get("class_weights", None)
 

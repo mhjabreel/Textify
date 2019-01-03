@@ -75,8 +75,6 @@ def main():
     #print(config)
     model_config = config['model']
     data_config = config['data'] 
-
-    print(data_config)
     
     data_kwargs = {}
     if 'others' in data_config:
@@ -114,20 +112,20 @@ def main():
     if 'init_params' in data_config:
         data_init_params.update(data_config['init_params'])
 
-    
-    print("")
-    print(data_config)
+
     
     model_type_and_ref = model_config['model_type'].split('#')
+
     model_type = model_type_and_ref[0]
     
     model_importer = DynamicImporter(model_type)
+
     model_params = model_config['model_params']
 
     #model_type
 
-    if "name" in model_params:
-        model_creator = model_importer.get_class(model_params["name"])
+    if len(model_type_and_ref) == 2:
+        model_creator = model_importer.get_class(model_type_and_ref[1])
     else:
         model_creator = model_importer.get_last_class_of(Model)
     
@@ -142,6 +140,7 @@ def main():
             raise RuntimeError("Unknown estimator builder %s." % estimator )
     else:
         num_classes = model_params.get("num_classes", 2)
+ 
         if num_classes == 2:
             estimator_builder = BinaryClassifierBuilder
         else:
@@ -168,6 +167,7 @@ def main():
     
     embeddings_specs = []
     embedding_config = model_params.get('embeddings', None)
+
     if not embedding_config is None:
         if features_count == 1:
 
@@ -202,13 +202,12 @@ def main():
             for k in embedding_config:
                 if k in vocabs:
                     vocab = vocabs[k][0]
-                    print(len(vocab))
                     if 'path' in embedding_config[k]:
                         pretrained_weights = load_embedding(embedding_config[k]['path'],
                                                     vocab,
                                                     with_header=embedding_config[k]['header'],
                                                     dim=embedding_config[k]['size'],
-                                                    separator=embedding_config.get('separator', ' '))
+                                                    separator=embedding_config[k].get('separator', ' '))
                         
                         emb_spec = EmbeddingSpec(
                             name=k,
@@ -236,10 +235,10 @@ def main():
 
     model_params['embedding_specs'] = embeddings_specs
 
-    print(model_params)
 
     model = model_creator(model_params)
     train_config = config['train']
+    train_config['num_classes'] = num_classes
     estimator = estimator_builder(model, train_config)
 
     if args.run == 'train' or args.run == 'train_and_eval':
@@ -273,7 +272,6 @@ def main():
                         data_init_params,
                         **_kwargs) 
 
-        print(train_config)
         runner = Runner(estimator, train_config)
         if args.run == 'train_and_eval':
             runner.train_and_evaluate(train_data_layer, dev_data_layer)
