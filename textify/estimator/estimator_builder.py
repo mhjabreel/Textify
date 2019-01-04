@@ -52,6 +52,8 @@ class EstimatorBuilder:
                 loss = None
             
             if not external_eval_hooks is None:
+                print(labels)
+                input()
                 for name, hook in external_eval_hooks:
                     eval_hooks.append(hook(name, labels, predictions['Predictions']))
             
