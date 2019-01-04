@@ -30,6 +30,8 @@ class EstimatorBuilder:
     
     def model_fn(self, scope=None, eval_hooks=None, external_eval_hooks=None):
         params = self._params
+        eval_hooks = eval_hooks or []
+        external_eval_hooks = external_eval_hooks or []
         def model_fn_impl(features, labels, mode):
             self._global_step = tf.train.get_or_create_global_step()
             logits = self._model(features, mode)
@@ -48,7 +50,6 @@ class EstimatorBuilder:
                     eval_metric_ops = self._evaluate(labels, predictions)           
             else:
                 loss = None
-            eval_hooks = eval_hooks or []
             
             if not external_eval_hooks is None:
                 for name, hook in external_eval_hooks:
