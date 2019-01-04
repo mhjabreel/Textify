@@ -50,7 +50,20 @@ class DynamicImporterTest(unittest.TestCase):
         importer = DynamicImporter(demo_file)
         c = importer.get_first_class_of(Model)
         self.assertEqual(c, SequenceClassifier)
-             
+
+    def testClasssImportingByType(self):
+        demo_file = os.path.join(self.get_temp_dir(), "demo.py")
+        
+        with io.open(demo_file, encoding="utf-8", mode="w") as fp:
+            fp.write(u"class Dummy:\n\tpass\n\nfrom textify.models import SequenceClassifier\n")   
+            fp.write(u"from textify.models import Model\n\n")  
+            fp.write(u"class MyModel(SequenceClassifier):\n\tpass\n\n")  
+
+        importer = DynamicImporter(demo_file)
+        c = list(importer.classes(Model))
+        print(c)
+        self.assertEqual(len(c), 2)             
+        
 
 if __name__ == "__main__":
     unittest.main()

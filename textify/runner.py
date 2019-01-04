@@ -38,11 +38,14 @@ class Runner:
         if session_config is not None:
             session_config_base.MergeFrom(session_config)
 
+        save_checkpoints_steps = config.get('save_checkpoints_steps', 500)
+        keep_checkpoint_max = config.get('keep_checkpoint_max', 5)
+
         run_config = tf.estimator.RunConfig(
             model_dir=config["model_dir"],
             session_config=session_config_base,
-            save_checkpoints_steps=500,
-            keep_checkpoint_max=10,
+            save_checkpoints_steps=save_checkpoints_steps,
+            keep_checkpoint_max=keep_checkpoint_max,
             tf_random_seed=seed)
 
         self._estimator = tf.estimator.Estimator(
@@ -87,9 +90,7 @@ class Runner:
         if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
             checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
         train_spec = self._build_train_spec(train_data_layer, checkpoint_path)
-        print(train_spec)
         eval_spec = self._build_eval_spec(eval_data_layer)
-        print(eval_spec)
         tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
 
     def predict(self, checkpoint_path=None):

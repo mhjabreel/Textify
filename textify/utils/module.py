@@ -66,6 +66,11 @@ class DynamicImporter:
             if issubclass(cls_v, cls_type):
                 return cls_v
     
+    def classes(self, cls_type):
+        for _, cls_v in self._classes.items():
+            if cls_v != cls_type and issubclass(cls_v, cls_type):
+                yield cls_v        
+    
     def get_last_class_of(self, cls_type):
         cls_ = None
         for _, cls_v in self._classes.items():

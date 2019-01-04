@@ -281,7 +281,8 @@ def main():
             external_eval_hooks = []
             # eehs = train_config['external_eval_hooks']
             eeh_importer = DynamicImporter(train_config['external_eval_hooks'])
-            external_eval_hooks.append(eeh_importer.get_first_class_of(ExternalEvaluatorHook))
+            for eeh in eeh_importer.classes(ExternalEvaluatorHook):
+                external_eval_hooks.append(eeh)
         else:
             external_eval_hooks = None
 

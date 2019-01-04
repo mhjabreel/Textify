@@ -45,16 +45,14 @@ class EstimatorBuilder:
                     train_op = optimizer.apply_gradients(zip(gradients, variables), global_step=self._global_step)
                 else:
                     train_op = None    
-                    eval_metric_ops = self._evaluate(labels, predictions)  
-                predictions = None          
+                    eval_metric_ops = self._evaluate(labels, predictions)           
             else:
                 loss = None
-
-            if eval_hooks is None:
-                eval_hooks = []
+            eval_hooks = eval_hooks or []
+            
             if not external_eval_hooks is None:
                 for name, hook in external_eval_hooks:
-                    eval_hooks.append(hook(name, labels, predictions))
+                    eval_hooks.append(hook(name, labels, predictions['Predictions']))
             
             return tf.estimator.EstimatorSpec(
                 mode=mode,
@@ -68,10 +66,8 @@ class EstimatorBuilder:
         
 
     def _get_optimizer(self, params):
-        
-        print(params)
+    
         learning_rate = params.get("learning_rate")
-        print(learning_rate)
         self._learning_rate = tf.constant(learning_rate)
         
         # decay
