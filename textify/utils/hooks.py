@@ -34,13 +34,13 @@ class ExternalEvaluatorHook(tf.train.SessionRunHook):
         if self._predictions is None:
             self._predictions = get_dict_from_collection("predictions")
 
-        if not self._predictions:
+        if self._predictions is None:
             raise RuntimeError("The model did not define any predictions.")
 
         if self._labels is None:
             self._labels = get_dict_from_collection("labels")
 
-        if not self._labels:
+        if self._labels is None:
             raise RuntimeError("The model did not define any labels.")
 
         self._global_step = tf.train.get_global_step()
@@ -50,7 +50,6 @@ class ExternalEvaluatorHook(tf.train.SessionRunHook):
     def before_run(self, run_context):  # pylint: disable=unused-argument
         return tf.train.SessionRunArgs([self._labels, self._predictions, self._global_step])    
     
-
 
     def after_run(self, run_context, run_values):  # pylint: disable=unused-argument
         labels, predictions, current_step = run_values.results
