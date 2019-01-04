@@ -30,8 +30,7 @@ class EstimatorBuilder:
     
     def model_fn(self, scope=None, eval_hooks=None, external_eval_hooks=None):
         params = self._params
-        eval_hooks = eval_hooks or []
-        external_eval_hooks = external_eval_hooks or []
+
         def model_fn_impl(features, labels, mode):
             self._global_step = tf.train.get_or_create_global_step()
             logits = self._model(features, mode)
@@ -50,12 +49,13 @@ class EstimatorBuilder:
                     eval_metric_ops = self._evaluate(labels, predictions)           
             else:
                 loss = None
-            
+            eval_hooks_ = []
+            if not eval_hooks is None:
+                eval_hooks_.extend(eval_hooks)
             if not external_eval_hooks is None:
-                print(labels)
-                input()
+
                 for name, hook in external_eval_hooks:
-                    eval_hooks.append(hook(name, labels, predictions['Predictions']))
+                    eval_hooks_.append(hook(name, labels, predictions['Predictions']))
             
             return tf.estimator.EstimatorSpec(
                 mode=mode,
@@ -63,7 +63,7 @@ class EstimatorBuilder:
                 loss=loss,
                 train_op=train_op,
                 eval_metric_ops=eval_metric_ops,
-                evaluation_hooks=eval_hooks)
+                evaluation_hooks=eval_hooks_)
         
         return model_fn_impl
         
