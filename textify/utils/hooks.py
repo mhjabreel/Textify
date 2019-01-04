@@ -68,7 +68,7 @@ class ExternalEvaluatorHook(tf.train.SessionRunHook):
 
 class MultiLabelExternalEvaluatorHook(ExternalEvaluatorHook):
 
-    def __init__(self, labels=None, predictions=None):
+    def __init__(self,name=None, labels=None, predictions=None):
         super(MultiLabelExternalEvaluatorHook, self).__init__("MultiLabel Evaluator", labels, predictions)
 
 
