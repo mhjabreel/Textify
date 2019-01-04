@@ -61,8 +61,10 @@ class DynamicImporterTest(unittest.TestCase):
 
         importer = DynamicImporter(demo_file)
         c = list(importer.classes(Model))
+        c = [_[0] for _ in c]
         print(c)
-        self.assertEqual(len(c), 2)             
+        self.assertEqual(len(c), 2) 
+        self.assertEqual({'MyModel', 'SequenceClassifier'}, set(c))            
         
 
 if __name__ == "__main__":
