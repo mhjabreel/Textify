@@ -305,7 +305,8 @@ def main():
                     dev_labels_source,
                     data_init_params,
                     **_kwargs) 
-                
+        
+        runner = Runner(estimator, train_config)
         runner.evaluate(dev_data_layer, checkpoint_path)
 
     elif args.run == 'predict':
