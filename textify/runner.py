@@ -14,6 +14,9 @@
 # ==============================================================================
 
 import tensorflow as tf
+from textify.estimator import Evaluator
+from textify.estimator import CheckpointAveragator
+from textify.estimator import BestCheckpointExporter
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -53,6 +56,13 @@ class Runner:
             config=run_config
         )
 
+        self._avg_ckpts = config.get('avg_ckpts', False)
+        self._max_avg_ckpts = config.get('max_avg_ckpts', 5)
+        self._avg_ckpt_dir = config.get('avg_ckpt_dir', None)
+        self._model_dir = config["model_dir"]
+
+        self._export_best_ckpt = config.get('export_best_ckpt', True)
+        self._eval_monitor = config.get('_eval_monitor', "F1")
 
     def _build_train_spec(self, data_layer, checkpoint_path=None):
         train_hooks = None
@@ -63,15 +73,15 @@ class Runner:
         return train_spec
 
     def _build_eval_spec(self, data_layer, checkpoint_path=None):
-        eval_hooks = None
+        
         eval_spec = tf.estimator.EvalSpec(
             input_fn=data_layer.input_fn(),
             steps=None,
             throttle_secs=0,
-            hooks=eval_hooks)
+            hooks=None)
         return eval_spec             
     
-    def train(self, data_layer, checkpoint_path=None):
+    def train(self, data_layer, checkpoint_path=None, saving_listeners=None):
         """Runs the training loop.
         Args:
             checkpoint_path: The checkpoint path to load the model weights from it.
@@ -79,19 +89,41 @@ class Runner:
         if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
             checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
         train_spec = self._build_train_spec(data_layer, checkpoint_path)
+
         self._estimator.train(train_spec.input_fn, hooks=train_spec.hooks, max_steps=train_spec.max_steps)
     
     def evaluate(self, data_layer, checkpoint_path=None):
         eval_spec = self._build_eval_spec(data_layer, checkpoint_path)
-        self._estimator.evaluate(eval_spec.input_fn, hooks=eval_spec.hooks, steps=eval_spec.steps, checkpoint_path=checkpoint_path)
+        return self._estimator.evaluate(eval_spec.input_fn, hooks=eval_spec.hooks, steps=eval_spec.steps, checkpoint_path=checkpoint_path)
     
 
     def train_and_evaluate(self, train_data_layer, eval_data_layer, checkpoint_path=None):
         if checkpoint_path is not None and tf.gfile.IsDirectory(checkpoint_path):
             checkpoint_path = tf.train.latest_checkpoint(checkpoint_path)
         train_spec = self._build_train_spec(train_data_layer, checkpoint_path)
-        eval_spec = self._build_eval_spec(eval_data_layer)
-        tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
+
+        saving_listeners = []
+
+        eval_fn = lambda : self.evaluate(eval_data_layer)
+        callbacks = []
+        if self._export_best_ckpt:
+            
+            callbacks = [BestCheckpointExporter("best_model", self._eval_monitor)]
+
+
+        saving_listeners.append(Evaluator(eval_fn, self._estimator, callbacks=callbacks))
+
+        if self._avg_ckpts:
+            
+            saving_listeners.append(CheckpointAveragator(self._model_dir, self._max_avg_ckpts, self._avg_ckpt_dir))
+
+        self._estimator.train(train_spec.input_fn,
+                hooks=train_spec.hooks,
+                max_steps=train_spec.max_steps,
+                saving_listeners=saving_listeners)
+
+        # eval_spec = self._build_eval_spec(eval_data_layer)
+        # tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
 
     def predict(self, checkpoint_path=None):
         pass

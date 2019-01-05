@@ -17,3 +17,7 @@
 from textify.estimator.estimator_builder import EstimatorBuilder
 from textify.estimator.estimator_builder import ClassifierBuilder
 from textify.estimator.estimator_builder import BinaryClassifierBuilder
+
+from textify.estimator.hooks.checkpoint_hooks import Evaluator
+from textify.estimator.hooks.checkpoint_hooks import CheckpointAveragator
+from textify.estimator.hooks.checkpoint_hooks import BestCheckpointExporter
