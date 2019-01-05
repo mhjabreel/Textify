@@ -281,7 +281,6 @@ def main():
             external_eval_hooks = []
             eeh_importer = DynamicImporter(train_config['external_eval_hooks'])
             for eeh in eeh_importer.classes(ExternalEvaluatorHook):
-                print(eeh)
                 external_eval_hooks.append(eeh)
         else:
             external_eval_hooks = None
@@ -308,7 +307,7 @@ def main():
                     **_kwargs) 
                 
         runner.evaluate(dev_data_layer, checkpoint_path)
-        
+
     elif args.run == 'predict':
         pass
 
