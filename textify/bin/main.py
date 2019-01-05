@@ -294,7 +294,21 @@ def main():
             runner.train(train_data_layer)
 
     elif args.run == 'eval':
-        pass
+        checkpoint_path = args.checkpoint_path
+        dev_features_source = data_config['dev']['features_source']
+        dev_labels_source = data_config['dev']['labels_source']
+
+        _kwargs = copy.deepcopy(data_kwargs)
+
+        _kwargs['batch_size'] = train_config.get('dev_batch_size', 100)
+        
+        dev_data_layer = cls_data_layer(dev_features_source,
+                    dev_labels_source,
+                    data_init_params,
+                    **_kwargs) 
+                
+        runner.evaluate(dev_data_layer, checkpoint_path)
+        
     elif args.run == 'predict':
         pass
 
