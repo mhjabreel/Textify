@@ -89,11 +89,13 @@ def export_as_checkpoint(variables, latest_step, output_dir, model_name='model')
         global_step = tf.get_variable("global_step",
             initializer=tf.constant(latest_step, dtype=tf.int64),
             trainable=False)
-
+        
+        tf_vars.append(global_step)
+        
         saver = tf.train.Saver(tf_vars, save_relative_paths=True)
 
     with tf.Session(graph=g) as sess:
-        sess.run(tf.variables_initializer(tf_vars + [global_step]))
+        sess.run(tf.variables_initializer(tf_vars))
         for p, assign_op, value in zip(placeholders, assign_ops, six.itervalues(variables)):
             sess.run(assign_op, {p: value})
         tf.logging.info("\t\tSaving new checkpoint to %s" % output_dir)
