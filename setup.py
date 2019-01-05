@@ -22,7 +22,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: Artificial Intelligence"
     ],
-    keywords="tensorflow opennmt nmt neural machine translation",
+    keywords="tensorflow text classifcation",
     install_requires=[
         "pyyaml",
     ],
