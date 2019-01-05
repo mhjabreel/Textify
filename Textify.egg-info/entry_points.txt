@@ -1,3 +1,0 @@
-[console_scripts]
-textify = textify.bin.main:main
-
