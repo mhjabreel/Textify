@@ -80,6 +80,8 @@ class DataLayer(object):
             padding_values = self._get_padding_values() # labels is 1D
 
             dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
+        else:
+            dataset = dataset.batch(self._batch_size)
         
         if not self._repeat is None and self._repeat:
             dataset = dataset.repeat()
