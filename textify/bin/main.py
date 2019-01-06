@@ -83,6 +83,8 @@ def main():
 
     data_init_params = {}
 
+    features_count = 1
+
     data_layer = data_config.get('data_layer', None)
     if not data_layer is None:
         cls_data_layer = DynamicImporter(data_layer).get_first_class_of(DataLayer)    
@@ -90,8 +92,6 @@ def main():
         feature_names = data_config.get("feature_names", None)
         if not feature_names is None:
             features_count = len(feature_names)
-        else:
-            features_count = 1
 
         if features_count > 1:
             
