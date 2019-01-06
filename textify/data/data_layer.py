@@ -42,6 +42,7 @@ class DataLayer(object):
         self._buffer_size = kwargs.get("buffer_size", None)
         self._repeat = kwargs.get("repeat", None)
         self._filter_fn = kwargs.get("filter_fn", None)
+        self._padding = kwargs.get("padding", True)
         self._tokenizer = tokenizer
 
         self._features = None
@@ -72,11 +73,13 @@ class DataLayer(object):
 
         if self._shuffle:
             dataset = dataset.shuffle(buffer_size, reshuffle_each_iteration=True) 
+        
+        if self._padding:
 
-        padded_shapes = self._get_padded_shapes()   # labels is 1D
-        padding_values = self._get_padding_values() # labels is 1D
+            padded_shapes = self._get_padded_shapes()   # labels is 1D
+            padding_values = self._get_padding_values() # labels is 1D
 
-        dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
+            dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
         
         if not self._repeat is None and self._repeat:
             dataset = dataset.repeat()
