@@ -247,14 +247,14 @@ class _SingleFeatureDataLayer(DataLayer):
         super(_SingleFeatureDataLayer, self).__init__(features_source, labels_source, tokenizer, init_params, **kwargs)
 
     def initialize(self):
-        words_vocab = self._init_params['vocab']
+        vocab = self._init_params['vocab']
         unk_value = self._init_params['unk_id']
         self._max_len = self._init_params.get('max_len', None)
-        self._words_vocab = tf.contrib.lookup.index_table_from_file(words_vocab, default_value=unk_value)
+        self._vocab = tf.contrib.lookup.index_table_from_file(vocab, default_value=unk_value)
         super(_SingleFeatureDataLayer, self).initialize()
 
     def _build_features_dataset(self, features_source):
-        return make_tokenized_data(features_source, self._tokenizer, self._words_vocab, self._max_len, self._num_parallel_calls)
+        return make_tokenized_data(features_source, self._tokenizer, self._vocab, self._max_len, self._num_parallel_calls)
     
     def _get_data_size(self, features_source):
         return count_lines(features_source)
