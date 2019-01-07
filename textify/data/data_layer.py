@@ -74,10 +74,12 @@ class DataLayer(object):
         if self._shuffle:
             dataset = dataset.shuffle(buffer_size, reshuffle_each_iteration=True) 
 
-        padded_shapes = self._get_padded_shapes()   # labels is 1D
-        padding_values = self._get_padding_values() # labels is 1D
-
-        dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
+        if self._padding:
+            padded_shapes = self._get_padded_shapes()   # labels is 1D
+            padding_values = self._get_padding_values() # labels is 1D            
+            dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
+        else:
+            dataset = dataset.batch(self._batch_size)
         
         if not self._repeat is None and self._repeat:
             dataset = dataset.repeat()
