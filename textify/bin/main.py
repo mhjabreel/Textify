@@ -87,7 +87,14 @@ def main():
 
     data_layer = data_config.get('data_layer', None)
     if not data_layer is None:
-        cls_data_layer = DynamicImporter(data_layer).get_first_class_of(DataLayer)    
+        data_layer_and_ref = data_layer.split('#')     
+        data_layer =  data_layer_and_ref[0]  
+        data_layer_importer = DynamicImporter(data_layer)
+
+        if len(data_layer_and_ref) == 2:
+            cls_data_layer = data_layer_importer.get_class(data_layer_and_ref[1])
+        else:
+            cls_data_layer = data_layer_importer.get_last_class_of(DataLayer)
     else:
         feature_names = data_config.get("feature_names", None)
         if not feature_names is None:
