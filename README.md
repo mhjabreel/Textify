@@ -38,6 +38,34 @@ The textify.data module enables you to build input pipelines from simple, reusab
          * init_params: a dictionary containing initialization parameters of the data layer, e.g. the vocabulary file, maximum length, unknown id, labels, etc. 
          * **kwargs: provides extra name and value params, e.g. batch_size=100.
       
-   All other data layers should subclass it. All subclasses should override ```python _build_features_dataset ```, that builds input dataset, and ```python _build_labels_dataset ```, building the labels dataset.
+   All other data layers should subclass it. All subclasses should override ```_build_features_dataset ```, that builds input dataset, and ```_build_labels_dataset ```, building the labels dataset.
 
-   Optionally, other data layers can override ```python _get_features_padded_shapes ```, ```python _get_features_padded_shapes ```, ```python _get_features_padded_shapes ```, and ```python _get_features_padded_shapes ```.
+   Optionally, other data layers can override ```_get_features_padded_shapes ```, ```_get_labels_padded_shapes ```, ```_get_features_padding_values ```, and ```_get_labels_padding_values ```, if it is necessary to make batch padding.
+
+   Example:
+
+   ```python
+      class DemoDataLayer(textify.data.DataLayer):
+
+         def _build_features_dataset(self):
+
+            features_dataset =  tf.data.TextLineDataset(self._features_source) # read the data line by line
+            features_dataset = features_dataset.map(lambda text: self._tokenizer(text)) # tokenize it.
+
+            return features_dataset
+         
+         def _build_labels_dataset(self):
+            labels_dataset =  tf.data.TextLineDataset(self._features_source) # read the data line by line
+            labels_dataset = labels_dataset.map(tf.string_to_number) # tokenize it.
+
+            return labels_dataset
+
+      data_layer = DemoDataLayer('features.txt', 'labels.txt', padding=False, batch_size=2)
+      next_batch = data_layer.input_fn(None)()
+
+      with tf.Session() as sess:
+
+         output = sess.run(next_batch)
+
+         print(output)
+   ```
