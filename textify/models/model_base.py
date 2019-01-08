@@ -82,7 +82,7 @@ class _Classifier(Model):
             predictions = tf.round(proba)
         else:
             proba = tf.nn.softmax(logits)
-            predictions = tf.arg_max(proba, dimension=1)
+            predictions = tf.argmax(proba, axis=1)
         
         if not self._reverse_target_vocab is None:
             labels = self._reverse_target_vocab.lookup(tf.to_int64(predictions))
