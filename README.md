@@ -15,10 +15,19 @@ Textify is used to implement the following models:
 ## Documentation
 
 Textify provides a framework consisting of two main API layers:
+
 ![Alt text](imgs/textify.png?raw=true "Textify framework.")
 
 ### Data Layer
 
-The textify.data module enables you to build input pipelines from simple, reusable pieces. As Textify is desgined to mainly suuport text classification and other NLP tasks, we provide some predifined [textify.data.DataLayer]s. 
+The textify.data module enables you to build input pipelines from simple, reusable pieces. As Textify is desgined to mainly suuport text classification and other NLP tasks, we provide some predifined [textify.data.DataLayer]s:
+
+   * textify.data.DefaultDataLayer: this default data layer is designed to build input pipeline for word-based text classification. 
+      ```python
+         __init__(features_source,
+                  labels_source=None,
+                  nit_params={},
+                  **kwargs)
+      ```
 
 
