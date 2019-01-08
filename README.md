@@ -20,16 +20,21 @@ Textify provides a framework consisting of two main API layers:
 
 ### Data Layer
 
-The textify.data module enables you to build input pipelines from simple, reusable pieces. As Textify is desgined to mainly suuport text classification and other NLP tasks, we provide some predifined [textify.data.DataLayer]s:
+The textify.data module enables you to build input pipelines from simple, reusable pieces. As Textify is desgined to mainly suuport text classification and other NLP tasks, we provide some predifined [textify.data.DataLayer]s. First, we describe the abstract class DataLayer.
 
-   * textify.data.DefaultDataLayer: this default data layer is designed to build input pipeline for word-based text classification. 
+   * textify.data.DataLayer: this default data layer is designed to build input pipeline for word-based text classification. 
       ```python
          __init__(features_source,
                   labels_source=None,
-                  nit_params={},
+                  tokenizer=space_tokenizer,
+                  init_params={},
                   **kwargs)
       ```
-      Parameters:	
+      * Parameters:	
 
-      * features_source: A tf.string tensor containing one or more filenames. Each line in the file represents one sample. 
-      * labels_source (Optional): If None [default], the dtat layer only works in the inference mode. Otherwise, the input pipline will be prepared as labeled data pipeline. In this case the data layer is supposed to be used in train mode or eval mode. The labels_source must be text file(s), each line represents the class that the corresponding sample in the features_source file belongs to.
+         * features_source: A tf.string tensor containing one or more filenames. Each line in the file represents one sample. 
+         * labels_source (Optional): If None [default], the dtat layer only works in the inference mode. Otherwise, the input pipline will be      prepared as labeled data pipeline. In this case the data layer is supposed to be used in train mode or eval mode. The labels_source must be text file(s), each line represents the class that the corresponding sample in the features_source file belongs to.
+         * tokenizer: is a function takes as an input a text and tokenises it. The default tokenizer is [space_tokenizer]. It uses to split the text before send it to the vocabulary lookup table.
+         * init_params: a dictionary containing initialization parameters of the data layer, e.g. the vocabulary file, maximum length, unknown id, labels, etc. 
+         * **kwargs: provides extra name and value params, e.g. batch_size=100.
+      
