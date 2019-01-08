@@ -15,7 +15,7 @@ Textify is used to implement the following models:
 ## Documentation
 
 Textify provides a framework consisting of two main API layers:
-![Alt text](imgs\textif.png?raw=true "Textify framework.")
+![Alt text](imgs/textify.png?raw=true "Textify framework.")
 
 ### Data Layer
 
