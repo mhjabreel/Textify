@@ -69,7 +69,7 @@ class BestCheckpointExporter:
             old_val = "INF" if self._best_val is None else "%.4f" % (self._best_val)
             tf.logging.info("Step[%d]: Improvment in %s from %s to %.4f.", global_step_value, self._monitor, old_val, val)
             tf.logging.info("Step[%d]: Export the best checkpoint to %s.", global_step_value, self._output_dir)
-
-            clone_checkpoint(check_pointpath, self._output_dir)
+            model_name = "model_%s_%.5f" % (self._monitor, val)
+            clone_checkpoint(check_pointpath, self._output_dir, model_name)
             
             self._best_val = val

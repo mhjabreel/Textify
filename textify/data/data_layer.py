@@ -146,10 +146,10 @@ class DataLayer(object):
             self._repeat = repeat
             self.initialize()
             self.build()
-            tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, self.initializer)
+            tf.add_to_collection(tf.GraphKeys.TABLE_INITIALIZERS, self._initializer)
             if not self._labels_source is None:
-                return self.features, self.labels      
-            return self.features
+                return self._features, self._labels      
+            return self._features
         
         return input_fn_impl
 
