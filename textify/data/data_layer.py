@@ -36,6 +36,7 @@ class DataLayer(object):
 
     def __init__(self, features_source, labels_source=None, tokenizer=space_tokenizer, init_params={},  **kwargs):
         
+        print(kwargs)
         self._batch_size = kwargs.get("batch_size", 32)
         self._num_parallel_calls = kwargs.get("num_parallel_calls", 4)
         self._shuffle = kwargs.get("shuffle", True)
@@ -97,21 +98,6 @@ class DataLayer(object):
         else:
             self._features = next_batch
             self._labels = None 
-
-        data_size = self._get_data_size(self._features_source)
-        nb_btaches, r = divmod(data_size, self._batch_size)
-        if r != 0:
-            nb_btaches += 1
-        
-        self._nb_btaches = nb_btaches
-    
-
-    def __len__(self):
-        return self._nb_btaches
-    
-    @abc.abstractmethod
-    def _get_data_size(self, features_source):
-        raise NotImplementedError()     
 
     @abc.abstractmethod
     def _build_features_dataset(self, features_source):
