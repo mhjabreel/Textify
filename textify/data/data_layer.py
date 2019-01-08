@@ -136,21 +136,19 @@ class DataLayer(object):
             return features_padding_values
         return features_padding_values, labels_padding_values
     
-    @abc.abstractmethod
+    
     def _get_features_padded_shapes(self):
-        raise NotImplementedError()
+        return None
 
-    @abc.abstractmethod
     def _get_labels_padded_shapes(self):
-        raise NotImplementedError()
+        return None
 
-    @abc.abstractmethod
+    
     def _get_features_padding_values(self):
-        raise NotImplementedError()
+        return None
 
-    @abc.abstractmethod
     def _get_labels_padding_values(self):
-        raise NotImplementedError()
+        return None
 
     def initialize(self):
         self._initialized = True

@@ -38,3 +38,6 @@ The textify.data module enables you to build input pipelines from simple, reusab
          * init_params: a dictionary containing initialization parameters of the data layer, e.g. the vocabulary file, maximum length, unknown id, labels, etc. 
          * **kwargs: provides extra name and value params, e.g. batch_size=100.
       
+   All other data layers should subclass it. All subclasses should override ```python _build_features_dataset ```, that builds input dataset, and ```python _build_labels_dataset ```, building the labels dataset.
+
+   Optionally, other data layers can override ```python _get_features_padded_shapes ```, ```python _get_features_padded_shapes ```, ```python _get_features_padded_shapes ```, and ```python _get_features_padded_shapes ```.
