@@ -31,5 +31,5 @@ The textify.data module enables you to build input pipelines from simple, reusab
       ```
       Parameters:	
 
-      features_source: A tf.string tensor containing one or more filenames. Each line in the file represents one sample. 
-      labels_source (Optional): If None [default], the dtat layer only works in the inference mode. Otherwise, the input pipline will be prepared as labeled data pipeline. In this case the data layer is supposed to be used in train mode or eval mode. The labels_source must be text file(s), each line represents the class that the corresponding sample in the features_source file belongs to.
+      * features_source: A tf.string tensor containing one or more filenames. Each line in the file represents one sample. 
+      * labels_source (Optional): If None [default], the dtat layer only works in the inference mode. Otherwise, the input pipline will be prepared as labeled data pipeline. In this case the data layer is supposed to be used in train mode or eval mode. The labels_source must be text file(s), each line represents the class that the corresponding sample in the features_source file belongs to.
