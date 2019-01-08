@@ -35,8 +35,7 @@ class DataException(Exception):
 class DataLayer(object):
 
     def __init__(self, features_source, labels_source=None, tokenizer=space_tokenizer, init_params={},  **kwargs):
-        
-        print(kwargs)
+    
         self._batch_size = kwargs.get("batch_size", 32)
         self._num_parallel_calls = kwargs.get("num_parallel_calls", 4)
         self._shuffle = kwargs.get("shuffle", True)
@@ -76,8 +75,8 @@ class DataLayer(object):
             dataset = dataset.shuffle(buffer_size, reshuffle_each_iteration=True) 
 
         if self._padding:
-            padded_shapes = self._get_padded_shapes()   # labels is 1D
-            padding_values = self._get_padding_values() # labels is 1D            
+            padded_shapes = self._get_padded_shapes()   
+            padding_values = self._get_padding_values()     
             dataset = dataset.padded_batch(self._batch_size, padded_shapes=padded_shapes, padding_values=padding_values)
         else:
             dataset = dataset.batch(self._batch_size)
@@ -98,6 +97,7 @@ class DataLayer(object):
         else:
             self._features = next_batch
             self._labels = None 
+
 
     @abc.abstractmethod
     def _build_features_dataset(self, features_source):
@@ -138,18 +138,6 @@ class DataLayer(object):
 
     def initialize(self):
         self._initialized = True
-    
-    @property
-    def initializer(self):
-        return self._initializer
-    
-    @property
-    def features(self):
-        return self._features
-
-    @property
-    def labels(self):
-        return self._labels
 
     def input_fn(self, repeat=None):
         

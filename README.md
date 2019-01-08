@@ -45,17 +45,20 @@ The textify.data module enables you to build input pipelines from simple, reusab
    Example:
 
    ```python
-      class DemoDataLayer(textify.data.DataLayer):
+      import tensorflow as tf
+      from textify.data import DataLayer
 
-         def _build_features_dataset(self):
+      class DemoDataLayer(DataLayer):
 
-            features_dataset =  tf.data.TextLineDataset(self._features_source) # read the data line by line
+         def _build_features_dataset(self, features_source):
+
+            features_dataset =  tf.data.TextLineDataset(features_source) # read the data line by line
             features_dataset = features_dataset.map(lambda text: self._tokenizer(text)) # tokenize it.
 
             return features_dataset
          
-         def _build_labels_dataset(self):
-            labels_dataset =  tf.data.TextLineDataset(self._features_source) # read the data line by line
+         def _build_labels_dataset(self, labels_source):
+            labels_dataset =  tf.data.TextLineDataset(labels_source) # read the data line by line
             labels_dataset = labels_dataset.map(tf.string_to_number) # tokenize it.
 
             return labels_dataset
@@ -64,8 +67,27 @@ The textify.data module enables you to build input pipelines from simple, reusab
       next_batch = data_layer.input_fn(None)()
 
       with tf.Session() as sess:
-
+         sess.run(tf.tables_initializer())
          output = sess.run(next_batch)
 
          print(output)
+   ```
+
+   If the file 'features.txt' contains the following tow lines:
+   ```text
+      Welcome to textify . <pad> <pad> <pad> <pad>
+      This is a text data layer demo .
+   ```
+
+   And the file 'labels.txt' contains:
+   ```text
+   1
+   2
+   ```
+
+   Then the output of the example is:
+   ```bash
+   (array([[b'This', b'is', b'a', b'text', b'data', b'layer', b'demo', b'.'],
+       [b'Welcome', b'to', b'textify', b'.', b'<pad>', b'<pad>',
+        b'<pad>', b'<pad>']], dtype=object), array([2., 1.], dtype=float32))
    ```
