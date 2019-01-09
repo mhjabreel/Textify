@@ -100,6 +100,6 @@ def export_as_checkpoint(variables, latest_step, output_dir, model_name='model')
         for p, assign_op, value in zip(placeholders, assign_ops, six.itervalues(variables)):
             sess.run(assign_op, {p: value})
         tf.logging.info("\t\tSaving new checkpoint to %s" % output_dir)
-        saver.save(sess, out_base_file, global_step=latest_step)
+        saver.save(sess, out_base_file)#, global_step=latest_step)
 
     return output_dir

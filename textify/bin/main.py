@@ -86,6 +86,7 @@ def main():
     features_count = 1
 
     data_layer = data_config.get('data_layer', None)
+    print(data_config)
     if not data_layer is None:
         data_layer_and_ref = data_layer.split('#')     
         data_layer =  data_layer_and_ref[0]  
