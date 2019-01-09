@@ -47,7 +47,7 @@ def avearge_checkpoints(model_dir, max_count):
     return avg_values    
 
 
-def clone_checkpoint(checkpoint_path_src, output_dir, model_name='model'):
+def clone_checkpoint(checkpoint_path_src, output_dir, model_name='model', id_=None):
 
     tf.logging.info("Listing variables...")
 
@@ -60,7 +60,8 @@ def clone_checkpoint(checkpoint_path_src, output_dir, model_name='model'):
         variables[name] = reader.get_tensor(name)
         if name.startswith("global_step"):
             latest_step = variables[name]
-    latest_step = latest_step or 0
+    
+    latest_step = id_ or latest_step
     
     export_as_checkpoint(variables, latest_step, output_dir, model_name)
 
@@ -99,6 +100,6 @@ def export_as_checkpoint(variables, latest_step, output_dir, model_name='model')
         for p, assign_op, value in zip(placeholders, assign_ops, six.itervalues(variables)):
             sess.run(assign_op, {p: value})
         tf.logging.info("\t\tSaving new checkpoint to %s" % output_dir)
-        saver.save(sess, out_base_file)
+        saver.save(sess, out_base_file, global_step=latest_step)
 
     return output_dir
