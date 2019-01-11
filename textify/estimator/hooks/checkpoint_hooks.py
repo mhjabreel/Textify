@@ -56,7 +56,7 @@ class CheckpointAveragator(tf.train.CheckpointSaverListener):
 
 class BestCheckpointExporter:
 
-    def __init__(self, output_dir, monitor='F1', compare_fn=lambda x, y: y is None or x > y):
+    def __init__(self, output_dir, monitor='Accuracy', compare_fn=lambda x, y: y is None or x > y):
 
         self._monitor = monitor
         self._compare_fn = compare_fn

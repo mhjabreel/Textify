@@ -18,7 +18,7 @@ import tensorflow as tf
 def precision_score(labels,
         predictions,
         num_classes,
-        average='macro',
+        average='micro',
         name=None):
 
     # Flatten the input if its rank > 1.
@@ -61,7 +61,7 @@ def precision_score(labels,
 def recall_score(labels,
         predictions,
         num_classes,
-        average='macro',
+        average='micro',
         name=None):
 
     # Flatten the input if its rank > 1.

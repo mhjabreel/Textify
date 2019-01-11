@@ -86,7 +86,7 @@ def main():
     features_count = 1
 
     data_layer = data_config.get('data_layer', None)
-    print(data_config)
+    
     if not data_layer is None:
         data_layer_and_ref = data_layer.split('#')     
         data_layer =  data_layer_and_ref[0]  
@@ -188,6 +188,8 @@ def main():
                 emb_spec = EmbeddingSpec(
                     name="input_emb",
                     pretrained_weights=pretrained_weights,
+                    vocab_size=pretrained_weights.shape[0],
+                    embedding_size=pretrained_weights.shape[1],
                     trainable=embedding_config.get("trainable", False)
                 ) 
             else:
@@ -247,6 +249,9 @@ def main():
     model = model_creator(model_params)
     train_config = config['train']
     train_config['num_classes'] = num_classes
+
+    model = model_creator(model_params)
+
     estimator = estimator_builder(model, train_config)
 
     if args.run == 'train' or args.run == 'train_and_eval':
@@ -309,6 +314,7 @@ def main():
 
         _kwargs['batch_size'] = train_config.get('dev_batch_size', 100)
         
+        
         dev_data_layer = cls_data_layer(dev_features_source,
                     dev_labels_source,
                     data_init_params,
@@ -318,7 +324,23 @@ def main():
         runner.evaluate(dev_data_layer, checkpoint_path)
 
     elif args.run == 'predict':
-        pass
+        checkpoint_path = args.checkpoint_path
+        dev_features_source = data_config['dev']['features_source']#args.features_file
+        dev_labels_source = data_config['dev']['labels_source']
+        out_file = args.predictions_file
+
+        _kwargs = copy.deepcopy(data_kwargs)
+
+        _kwargs['batch_size'] = train_config.get('dev_batch_size', 100)
+        _kwargs['shuffle'] = False
+        
+        data_layer = cls_data_layer(dev_features_source,
+                    dev_labels_source,
+                    data_init_params,
+                    **_kwargs) 
+        
+        runner = Runner(estimator, train_config)
+        runner.predict(data_layer, checkpoint_path)        
 
 if __name__ == "__main__":
     main()

@@ -125,7 +125,11 @@ class Runner:
         # eval_spec = self._build_eval_spec(eval_data_layer)
         # tf.estimator.train_and_evaluate(self._estimator, train_spec, eval_spec)
 
-    def predict(self, checkpoint_path=None):
-        pass
+    def predict(self, data_layer, checkpoint_path=None):
+
+        input_fn = data_layer.input_fn()
+        predictions = self._estimator.predict(input_fn, checkpoint_path=checkpoint_path)
+        for p in predictions:
+            print(p['Predictions'])
 
     
